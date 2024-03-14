@@ -69,6 +69,7 @@ M.IMSelectOSCEnable = function()
 end
 
 M.IMSelectSocketEnable = function()
+  vim.notify("IMSelectRemote: Socket enabled", vim.log.levels.INFO)
   vim.cmd([[
       augroup im_select_remote
         autocmd!
@@ -100,9 +101,8 @@ M.setup = function(args)
     end
 
     if retry_count == M.config.socket.max_retry_count then
-      vim.cmd("echohl WarningMsg")
-      vim.cmd("echomsg 'IMSelectServer is not running, please start it first!'")
-      vim.cmd("echohl None")
+      vim.notify("IMSelectServer is not running, please start it first!", vim.log.levels.WARN)
+      return
     end
 
     M.IMSelectSocketEnable()
