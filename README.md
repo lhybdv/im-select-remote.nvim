@@ -3,9 +3,9 @@
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/mkdir700/im-select-remote/default.yml?branch=main&style=for-the-badge)
 ![Lua](https://img.shields.io/badge/Made%20with%20Lua-blueviolet.svg?style=for-the-badge&logo=lua)
 
-一个用于在远程服务器上切换本机输入法的 VIM 插件。
+基于 SSH 转发和 Socket 通信的 VIM 输入法切换插件。
 
-## Preparation
+## 介绍
 
 切换输入法您需要安装第三方工具，我这里推荐使用 [im-select](https://github.com/daipeihust/im-select)，当我执行如下命令即可切换至 ABC 输入法：
 
@@ -15,7 +15,7 @@ im-select com.apple.keylayout.ABC
 
 所以，逻辑非常简单，就是让远程服务器调用本机用于切换输入法的命令即可。
 
-## Installation
+## 安装
 
 - packer
 
@@ -23,7 +23,35 @@ im-select com.apple.keylayout.ABC
 use { 'mkdir700/im-select-remote' }
 ```
 
-## Configuration
+- lazyvim
+
+```lua
+{
+  "mkdir700/im-select-remote",
+  config = function()
+    require('im-select-remote').setup()
+  end
+}
+```
+
+## 配置
+
+### 插件配置
+
+默认配置如下：
+
+```lua
+M.config = {
+  osc = {
+    secret = "",
+  },
+  socket = {
+    port = 23333,
+    max_retry_count = 3,
+    command = "im-select com.apple.keylayout.ABC",
+  },
+}
+```
 
 ### SSH + Socket (推荐)
 
@@ -44,7 +72,10 @@ Host *
   ForwardAgent yes
 ```
 
-- 远程
+> 注意：`RemoteForward` 用于端口转发，`ServerAliveInterval` 用于保持连接。
+> `RemoteForward` 的第一个参数是远程服务器的地址，第二个参数是本地机器的地址。
+
+- 远程服务器
 
 ```
 Host local
@@ -60,7 +91,7 @@ IM-Select-Remote 可以连接 Socket 服务以通知本地机器切换输入法�
 ```bash
 git clone https://github.com/mkdir700/im-select-remote.git
 chmod +x ./im-select-remote/server/im_server.sh
-./im-select-remote/server/im_server.sh
+./im-select-remote/server/im-server.sh
 ```
 
 ##### 自启动
@@ -79,6 +110,13 @@ Linux:
 TODO
 ```
 
+Windows:
+
+
+```bash
+TODO
+```
+
 注意：
 
 打开 NVIM 后，IM-Select-Remote 会去判断是否已配置 SSH，这将作为是否自动连接的前提条件。如果检查通过将连接 Socket 服务，否则最多重试三次后就放弃连接。
@@ -89,14 +127,14 @@ TODO
 
 TODO
 
-## Usage
+## 使用
 
 自动切换输入法的触发时机：
 
 - 进入缓冲区时
 - 从输入模式回到正常模式时
 
-## Thanks
+## 感谢
 
 - https://github.com/daipeihust/im-select
 - https://github.com/ojroques/nvim-osc52
